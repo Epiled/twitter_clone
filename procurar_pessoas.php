@@ -24,32 +24,42 @@ if (!isset($_SESSION['usuario'])) {
 
 	<script type="text/javascript">
 		$(document).ready(function() {
-			$('#btn_tweet').click(function() {
-				if ($('#texto_tweet').val.length > 0) {
+			$('#btn_procurar_pessoas').click(function() {
+				if ($('#nome_pessoa').val.length > 0) {
 					$.ajax({
-						url: 'inclui_tweet.php',
+						url: 'get_pessoas.php',
 						method: 'post',
-						data: $('#form_tweet').serialize(),
+						data: $('#form_procurar_pessoas').serialize(),
 						success: function(data) {
-							$('#texto_tweet').val('');
-							atualizaTweet();
-							alert("Tweet incluído com sucesso");
+							$('#pessoas').html(data);
+
+							$('.btn_seguir').click( function (){
+								var id_usuario = $(this).data('id_usuario');
+								$.ajax({
+									url: 'seguir.php',
+									method: 'post',
+									data: { seguir_id_usuario: id_usuario},
+									success: function(data){
+										alert('Requisição efetuada com sucesso');
+									}
+								})
+							})
+
+							$('.btn_deixar_seguir').click( function (){
+								var id_usuario = $(this).data('id_usuario');
+								$.ajax({
+									url: 'deixar_seguir.php',
+									method: 'post',
+									data: { deixar_seguir_id_usuario: id_usuario},
+									success: function(data){
+										alert('Deixou de seguir com sucesso');
+									}
+								})
+							})
 						}
 					});
 				}
 			});
-
-			function atualizaTweet() {
-				$.ajax({
-					url: 'get_tweet.php',
-					success: function(data) {
-						$('#tweets').html(data);
-					}
-				});
-			}
-
-			atualizaTweet();
-
 		});
 	</script>
 
@@ -72,6 +82,7 @@ if (!isset($_SESSION['usuario'])) {
 
 			<div id="navbar" class="navbar-collapse collapse">
 				<ul class="nav navbar-nav navbar-right">
+					<li><a href="home.php">Home</a></li>
 					<li><a href="sair.php">Sair</a></li>
 				</ul>
 			</div>
@@ -100,23 +111,22 @@ if (!isset($_SESSION['usuario'])) {
 		<div class="col-md-6">
 			<div class="panel panel-default">
 				<div class="panel-body">
-					<form id="form_tweet" class="input-group">
-						<input id="texto_tweet" type="text" class="form-control" name="texto_tweet" placeholder="O que está acontecendo?" maxlength="140">
+					<form id="form_procurar_pessoas" class="input-group">
+						<input id="nome_pessoa" type="text" class="form-control" name="nome_pessoa" placeholder="Quem você esta prourando?" maxlength="140">
 						<span class="input-group-btn">
-							<button id="btn_tweet" class="btn btn-default" type="button">Tweet</button>
+							<button id="btn_procurar_pessoas" class="btn btn-default" type="button">Procurar</button>
 						</span>
 					</form>
 				</div>
 			</div>
 
-			<div id="tweets" class="list-group"></div>
+			<div id="pessoas" class="list-group"></div>
 
 		</div>
 
 		<div class="col-md-3">
 			<div class="panel panel-default">
 				<div class="panel-body">
-					<h4><a href="procurar_pessoas.php">Procurar por pessoas</a></h4>
 				</div>
 			</div>
 		</div>
